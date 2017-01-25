@@ -51,8 +51,10 @@ var octopus = {
 	appendNumber: function(digit){
 		if (octopus.editingNumber1) {
 			model.num1 += digit;
+			view.appendToScreen(digit);
 		} else if (octopus.editingNumber2) {
 			model.num2 += digit;
+			view.appendToScreen(digit);
 		} else {
 			return;
 		}
@@ -111,21 +113,34 @@ var view = {
 		// var $number = $('.number-btn');
 
 		$('.container').on('click', '.label', function() {
+			// assign clicked button text value to variable
 			var btnValue = ($(this).text());
+
+			// if selected button is a number
 			if ($.isNumeric(btnValue)) {
+				// append button value to model (and to view)
 				octopus.appendNumber(btnValue);
-				// $(this).toggleClass('unselected selectedbutton');
-				view.renderInput(this, btnValue);
+				// view.appendToScreen(btnValue);
+				view.renderInput(this);
 				console.log("num1= " + model.num1);
+			// if selected button is an operator
 			} else if (octopus.isOperator(btnValue)) {
-				console.log("I am an operator");
+				view.deselect();
+				view.clearOutputArea();
+
 				octopus.setOperator(btnValue);
-				view.renderInput(this, btnValue);
+				// append operator to output area and remove formatting from num1
+				view.renderInput(this);
+			// if selected button is =
 			} else if (btnValue === "="){
 				octopus.calculate();
-				view.renderInput(this, btnValue);
+				view.renderInput(this);
 				view.renderOutput();
+				console.log(model.num1 + " + " + model.num2 + " = " + model.result);
+				octopus.reset();
+			// if selected button is "C"
 			} else if (btnValue === "C") {
+				view.deselect();
 				view.clearAll();
 			}
 
@@ -134,18 +149,28 @@ var view = {
 
 	},
 
-	renderInput: function(button, number) {
-		var $outputArea = $('#output');
-		var $button = $(button);
-
-		$button.addClass('selectedbutton');
-		$outputArea.append(number);
+	deselect: function() {
+		$('.label').removeClass('selectedbutton');
 	},
+
+	appendToScreen : function(value) {
+		// view.clearOutputArea();
+		var $outputArea = $('#output');
+		$outputArea.append(value);
+		console.log("appended to screen");
+	},
+
+	renderInput: function(selectedButton) {
+		var $button = $(selectedButton);
+		$button.addClass('selectedbutton');
+	},
+
 	renderOutput: function() {
 		var $outputArea = $('#output');
-		$outputArea.empty();
+		this.clearOutputArea()
 		var result = octopus.getResult();
 		$outputArea.append(result);
+		this.deselect();
 		console.log("rendered output! " + model.result);
 	},
 	clearOutputArea: function() {
@@ -156,6 +181,12 @@ var view = {
 		octopus.reset();
 		this.clearOutputArea();
 	}
-}
+
+	// render: function(selectedButton, value) {
+	// 	var $outputArea = $('#output');
+	// 	var $button = $(selectedButton);
+
+	// }
+};
 
 octopus.init();

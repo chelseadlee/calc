@@ -32,9 +32,7 @@
 	border: 1px solid red;
 	margin: 0 auto;
 	width: 98%;
-}
-.unselected {
-	background-color: #ffffff;
+	font-size: 3em;
 }
 
 .selectedbutton {
