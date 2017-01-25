@@ -111,7 +111,6 @@ var view = {
 	init: function(){
 
 		// var $number = $('.number-btn');
-
 		$('.container').on('click', '.label', function() {
 			// assign clicked button text value to variable
 			var btnValue = ($(this).text());
