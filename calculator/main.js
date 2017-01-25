@@ -115,37 +115,33 @@ var view = {
 			// assign clicked button text value to variable
 			var btnValue = ($(this).text());
 
-			// if selected button is a number
-			if ($.isNumeric(btnValue)) {
+			// if selected button is a number or decimal point
+			if ($.isNumeric(btnValue) || btnValue === ".") {
 				// append button value to model (and to view)
 				octopus.appendNumber(btnValue);
-				// view.appendToScreen(btnValue);
 				view.renderInput(this);
 				console.log("num1= " + model.num1);
 			// if selected button is an operator
 			} else if (octopus.isOperator(btnValue)) {
 				view.deselect();
-				view.clearOutputArea();
-
 				octopus.setOperator(btnValue);
 				// append operator to output area and remove formatting from num1
 				view.renderInput(this);
-			// if selected button is =
+				view.clearOutputArea();
+
+			// if selected button is "=""
 			} else if (btnValue === "="){
 				octopus.calculate();
 				view.renderInput(this);
 				view.renderOutput();
-				console.log(model.num1 + " + " + model.num2 + " = " + model.result);
+				console.log(model.num1 + " " + model.chosenOperator + " " + model.num2 + " = " + model.result);
 				octopus.reset();
 			// if selected button is "C"
 			} else if (btnValue === "C") {
 				view.deselect();
 				view.clearAll();
 			}
-
-
 		});
-
 	},
 
 	deselect: function() {
@@ -153,7 +149,6 @@ var view = {
 	},
 
 	appendToScreen : function(value) {
-		// view.clearOutputArea();
 		var $outputArea = $('#output');
 		$outputArea.append(value);
 		console.log("appended to screen");
