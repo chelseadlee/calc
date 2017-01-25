@@ -48,23 +48,18 @@ var octopus = {
 	setNum2: function(n){
 		model.num2 = n;
 	},
-
-	getOutputValue: function(){
-		return $('#output').text();
-	},
-	setOutputValue: function(val){
-		model.outputValue = val;
-	},
 	appendNumber: function(digit){
 		if (octopus.editingNumber1) {
 			model.num1 += digit;
-		} else {
+		} else if (octopus.editingNumber2) {
 			model.num2 += digit;
+		} else {
+			return;
 		}
 	},
 	isOperator: function(symbol) {
 		return model.operators[symbol];
-	},	
+	},
 	getOperator: function(){
 		return model.chosenOperator;
 	},
@@ -78,7 +73,7 @@ var octopus = {
 		var x = parseFloat(this.getNum1());
 		var y = parseFloat(this.getNum2());
 		var operator = this.getOperator();
-		var result = 0;
+		var result = null;
 		switch (operator) {
 			case "+":
 				result = octopus.add(x,y);
@@ -93,52 +88,73 @@ var octopus = {
 				result = octopus.divide(x,y);
 				break;
 		}
-		model.result = result;
+		model.result = parseFloat(result);
 	},
 	getResult: function(){
 		return model.result;
+		octopus.editingNumber2 = false;
+	},
+	reset: function() {
+		this.setNum1("");
+		this.setOperator("");
+		this.setNum2("");
+		model.result = 0;
+		this.editingNumber2 = false;
+		this.editingNumber1 = true;
 	}
-
 }
 
 var view = {
-	
+
 	init: function(){
-		
+
 		// var $number = $('.number-btn');
 
-		$('.label').on('click', function() {
-			var selectedBtn = ($(this).text()); 
-			console.log(typeof selectedBtn);
-
-			if ($.isNumeric(selectedBtn)) {
-				octopus.appendNumber(selectedBtn);
-				console.log(model.num1);
-			} else if (octopus.isOperator(selectedBtn)) {
-				octopus.setOperator(selectedBtn);
-			} else if (selectedBtn === "="){
+		$('.container').on('click', '.label', function() {
+			var btnValue = ($(this).text());
+			if ($.isNumeric(btnValue)) {
+				octopus.appendNumber(btnValue);
+				// $(this).toggleClass('unselected selectedbutton');
+				view.renderInput(this, btnValue);
+				console.log("num1= " + model.num1);
+			} else if (octopus.isOperator(btnValue)) {
+				console.log("I am an operator");
+				octopus.setOperator(btnValue);
+				view.renderInput(this, btnValue);
+			} else if (btnValue === "="){
 				octopus.calculate();
-
+				view.renderInput(this, btnValue);
+				view.renderOutput();
+			} else if (btnValue === "C") {
+				view.clearAll();
 			}
 
-			view.render(this, selectedBtn);
 
 		});
 
 	},
 
-	render: function(button, number) {
+	renderInput: function(button, number) {
 		var $outputArea = $('#output');
+		var $button = $(button);
 
-		var num1 = octopus.getNum1(); 
-		var num2 = octopus.getNum2();
-		var operator = octopus.getOperator();
-		var result = octopus.getResult()
-		
-		$(button).css('background-color', '#cccccc');
+		$button.addClass('selectedbutton');
 		$outputArea.append(number);
-		console.log(num1 + " " + operator + " " + num2 + " = " + result);
-
+	},
+	renderOutput: function() {
+		var $outputArea = $('#output');
+		$outputArea.empty();
+		var result = octopus.getResult();
+		$outputArea.append(result);
+		console.log("rendered output! " + model.result);
+	},
+	clearOutputArea: function() {
+		var $outputArea = $('#output');
+		$outputArea.empty();
+	},
+	clearAll: function() {
+		octopus.reset();
+		this.clearOutputArea();
 	}
 }
 
