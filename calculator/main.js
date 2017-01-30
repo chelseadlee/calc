@@ -1,5 +1,6 @@
 var model = {
 	// operator, number, output
+	nums: [],
 	num1: "",
 	num2: "",
 	operators: {
@@ -12,7 +13,6 @@ var model = {
 	chosenOperator: "",
 	result: 0
 }
-
 
 var octopus = {
 	editingNumber1: true,
@@ -66,14 +66,17 @@ var octopus = {
 		return model.chosenOperator;
 	},
 	setOperator: function(operator){
-		model.chosenOperator = operator;
-		octopus.editingNumber1 = false;
+		if (model.num1 !== '') {
+			model.chosenOperator = operator;
+			octopus.editingNumber1 = false;
+		};
 	},
 	calculate: function() {
 		octopus.editingNumber2 = false;
 		var x = parseFloat(this.getNum1());
 		var y = parseFloat(this.getNum2());
 		var operator = this.getOperator();
+		var result = 0;
 		switch (operator) {
 			case "+":
 				result = octopus.add(x,y);
@@ -96,7 +99,7 @@ var octopus = {
 	},
 	reset: function() {
 		this.setNum1("");
-		this.setOperator("");
+		model.chosenOperator = "";
 		this.setNum2("");
 		model.result = 0;
 		this.editingNumber2 = false;
@@ -108,38 +111,64 @@ var view = {
 	outputArea: $('#output'),
 	init: function(){
 
-		// var $number = $('.number-btn');
 		$('.container').on('click', '.label', function() {
 			// assign clicked button text value to variable
-			var btnValue = ($(this).text());
+			var $btnValue = $(this).text();
+			view.handleInput($btnValue, this);
+		});
+	},
 
-			// if selected button is a number or decimal point
-			if ($.isNumeric(btnValue) || btnValue === ".") {
+	handleInput: function(input, selectedButton) {
+		// switch(true) {
+		// 	case ($.isNumeric(input) || input === "."):
+		// 		octopus.appendNumber(input);
+		// 		view.renderInput(selectedButton);
+		// 		break;
+		// 	case (octopus.isOperator(input)):
+		// 		view.deselect();
+		// 		octopus.setOperator(input);
+		// 		view.renderInput(selectedButton);
+		// 		break;
+		// 	case (input === "="):
+		// 		octopus.calculate();
+		// 		view.renderInput(selectedButton);
+		// 		view.renderOutput();
+		// 		octopus.appendNumber(input);
+		// 		octopus.reset();
+		// 		break;
+		// 	case (input === "C"):
+		// 		view.deselect();
+		// 		view.clearAll();
+		// 		break;
+		// 	default:
+		// 		console.log("I DON'T KNOW WHAT TO DO");
+		// }
+
+			if ($.isNumeric(input) || input === ".") {
 				// append button value to model (and to view)
-				octopus.appendNumber(btnValue);
-				view.renderInput(this);
+				octopus.appendNumber(input);
+				view.renderInput(selectedButton);
 				console.log("num1= " + model.num1);
 			// if selected button is an operator
-			} else if (octopus.isOperator(btnValue)) {
+			} else if (octopus.isOperator(input)) {
 				view.deselect();
-				octopus.setOperator(btnValue);
+				octopus.setOperator(input);
 				// append operator to output area and remove formatting from num1
-				view.renderInput(this);
+				view.renderInput(selectedButton);
 				// view.clearOutputArea();
 
 			// if selected button is "=""
-			} else if (btnValue === "="){
+			} else if (input === "="){
 				octopus.calculate();
-				view.renderInput(this);
+				view.renderInput(selectedButton);
 				view.renderOutput();
 				console.log(model.num1 + " " + model.chosenOperator + " " + model.num2 + " = " + model.result);
 				octopus.reset();
 			// if selected button is "C"
-			} else if (btnValue === "C") {
+			} else if (input === "C") {
 				view.deselect();
 				view.clearAll();
 			}
-		});
 	},
 
 	deselect: function() {
