@@ -109,6 +109,7 @@ var octopus = {
 
 var view = {
 	outputArea: $('#output'),
+	outputCharCounter: 0,
 	init: function(){
 
 		$('.container').on('click', '.label', function() {
@@ -146,21 +147,24 @@ var view = {
 
 			if ($.isNumeric(input) || input === ".") {
 				// append button value to model (and to view)
-				octopus.appendNumber(input);
-				view.renderInput(selectedButton);
-				console.log("num1= " + model.num1);
+					octopus.appendNumber(input);
+					view.addSelectedClass(selectedButton);
+					// view.renderInput(selectedButton);
+					console.log("num1= " + model.num1);
 			// if selected button is an operator
 			} else if (octopus.isOperator(input)) {
-				view.deselect();
+				// view.deselect();
 				octopus.setOperator(input);
+				// $(this).addClass('selectedbutton');
+				view.addSelectedClass(selectedButton);
 				// append operator to output area and remove formatting from num1
-				view.renderInput(selectedButton);
+				view.addSelectedClass(selectedButton);
 				// view.clearOutputArea();
 
 			// if selected button is "=""
 			} else if (input === "="){
 				octopus.calculate();
-				view.renderInput(selectedButton);
+				// view.renderInput(selectedButton);
 				view.renderOutput();
 				console.log(model.num1 + " " + model.chosenOperator + " " + model.num2 + " = " + model.result);
 				octopus.reset();
@@ -177,11 +181,13 @@ var view = {
 
 	appendToScreen : function(value) {
 		this.outputArea.append(value);
+		console.log(this.outputCharCounter);
 		console.log("appended to screen");
 	},
 
-	renderInput: function(selectedButton) {
+	addSelectedClass: function(selectedButton) {
 		var $button = $(selectedButton);
+		this.deselect();
 		$button.addClass('selectedbutton');
 	},
 
