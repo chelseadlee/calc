@@ -10,7 +10,6 @@ var model = {
 	},
 	equals: "=",
 	chosenOperator: "",
-	outputValue: null,
 	result: 0
 }
 
@@ -51,13 +50,14 @@ var octopus = {
 	appendNumber: function(digit){
 		if (octopus.editingNumber1) {
 			model.num1 += digit;
-			view.appendToScreen(digit);
 		} else if (octopus.editingNumber2) {
 			model.num2 += digit;
-			view.appendToScreen(digit);
 		} else {
-			return;
+			view.clearOutputArea();
+			this.editingNumber2 = true;
+			model.num2 = digit;
 		}
+		view.appendToScreen(digit);
 	},
 	isOperator: function(symbol) {
 		return model.operators[symbol];
@@ -68,14 +68,12 @@ var octopus = {
 	setOperator: function(operator){
 		model.chosenOperator = operator;
 		octopus.editingNumber1 = false;
-		octopus.editingNumber2 = true;
 	},
 	calculate: function() {
 		octopus.editingNumber2 = false;
 		var x = parseFloat(this.getNum1());
 		var y = parseFloat(this.getNum2());
 		var operator = this.getOperator();
-		var result = null;
 		switch (operator) {
 			case "+":
 				result = octopus.add(x,y);
@@ -107,7 +105,7 @@ var octopus = {
 }
 
 var view = {
-
+	outputArea: $('#output'),
 	init: function(){
 
 		// var $number = $('.number-btn');
@@ -127,7 +125,7 @@ var view = {
 				octopus.setOperator(btnValue);
 				// append operator to output area and remove formatting from num1
 				view.renderInput(this);
-				view.clearOutputArea();
+				// view.clearOutputArea();
 
 			// if selected button is "=""
 			} else if (btnValue === "="){
@@ -149,8 +147,7 @@ var view = {
 	},
 
 	appendToScreen : function(value) {
-		var $outputArea = $('#output');
-		$outputArea.append(value);
+		this.outputArea.append(value);
 		console.log("appended to screen");
 	},
 
@@ -160,16 +157,14 @@ var view = {
 	},
 
 	renderOutput: function() {
-		var $outputArea = $('#output');
 		this.clearOutputArea()
 		var result = octopus.getResult();
-		$outputArea.append(result);
+		this.outputArea.append(result);
 		this.deselect();
 		console.log("rendered output! " + model.result);
 	},
 	clearOutputArea: function() {
-		var $outputArea = $('#output');
-		$outputArea.empty();
+		this.outputArea.empty();
 	},
 	clearAll: function() {
 		octopus.reset();
