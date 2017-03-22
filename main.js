@@ -120,59 +120,34 @@ var view = {
 	},
 
 	handleInput: function(input, selectedButton) {
-		// switch(true) {
-		// 	case ($.isNumeric(input) || input === "."):
-		// 		octopus.appendNumber(input);
-		// 		view.renderInput(selectedButton);
-		// 		break;
-		// 	case (octopus.isOperator(input)):
-		// 		view.deselect();
-		// 		octopus.setOperator(input);
-		// 		view.renderInput(selectedButton);
-		// 		break;
-		// 	case (input === "="):
-		// 		octopus.calculate();
-		// 		view.renderInput(selectedButton);
-		// 		view.renderOutput();
-		// 		octopus.appendNumber(input);
-		// 		octopus.reset();
-		// 		break;
-		// 	case (input === "C"):
-		// 		view.deselect();
-		// 		view.clearAll();
-		// 		break;
-		// 	default:
-		// 		console.log("I DON'T KNOW WHAT TO DO");
-		// }
-
-			if ($.isNumeric(input) || input === ".") {
-				// append button value to model (and to view)
-					octopus.appendNumber(input);
-					view.addSelectedClass(selectedButton);
-					// view.renderInput(selectedButton);
-					console.log("num1= " + model.num1);
-			// if selected button is an operator
-			} else if (octopus.isOperator(input)) {
-				// view.deselect();
-				octopus.setOperator(input);
-				// $(this).addClass('selectedbutton');
+		if ($.isNumeric(input) || input === ".") {
+			// append button value to model (and to view)
+				octopus.appendNumber(input);
 				view.addSelectedClass(selectedButton);
-				// append operator to output area and remove formatting from num1
-				view.addSelectedClass(selectedButton);
-				// view.clearOutputArea();
-
-			// if selected button is "=""
-			} else if (input === "="){
-				octopus.calculate();
 				// view.renderInput(selectedButton);
-				view.renderOutput();
-				console.log(model.num1 + " " + model.chosenOperator + " " + model.num2 + " = " + model.result);
-				octopus.reset();
-			// if selected button is "C"
-			} else if (input === "C") {
-				view.deselect();
-				view.clearAll();
-			}
+				console.log("num1= " + model.num1);
+		// if selected button is an operator
+		} else if (octopus.isOperator(input)) {
+			// view.deselect();
+			octopus.setOperator(input);
+			// $(this).addClass('selectedbutton');
+			view.addSelectedClass(selectedButton);
+			// append operator to output area and remove formatting from num1
+			view.addSelectedClass(selectedButton);
+			// view.clearOutputArea();
+
+		// if selected button is "=""
+		} else if (input === "="){
+			octopus.calculate();
+			// view.renderInput(selectedButton);
+			view.renderOutput();
+			console.log(model.num1 + " " + model.chosenOperator + " " + model.num2 + " = " + model.result);
+			octopus.reset();
+		// if selected button is "C"
+		} else if (input === "C") {
+			view.deselect();
+			view.clearAll();
+		}
 	},
 
 	deselect: function() {
